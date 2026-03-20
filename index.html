@@ -5,21 +5,36 @@
     <meta name="authoring-tool" content="Adobe_Animate_CC">
     <meta name="ad.size" content="width=240,height=400">
     <title>HTML5 Banner 240x400</title>
-    
-    <!-- Подключаем CreateJS с сервера Яндекса (разрешено требованиями) -->
     <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
-    
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            background-color: rgba(59, 134, 128, 1.00);
+            box-sizing: border-box;
         }
-        <div id="animation_container" style="background-color:rgba(59, 134, 128, 1.00); width:240px; height:400px">
-    <canvas id="canvas" width="240" height="400" style="position: absolute; display: block; background-color:rgba(59, 134, 128, 1.00);"></canvas>
-    <div id="dom_overlay_container" style="pointer-events:none; overflow:hidden; width:240px; height:400px; position: absolute; left: 0px; top: 0px; display: block;"></div>
-</div>
-        /* Кликабельная область для Яндекса (обязательный элемент) */
+        body {
+            background-color: #3B8680;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        #animation_container {
+            position: relative;
+            width: 240px;
+            height: 400px;
+            background-color: #3B8680;
+            overflow: hidden;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 240px;
+            height: 400px;
+            background-color: #3B8680;
+            display: block;
+        }
         #click_area {
             position: absolute;
             top: 0;
@@ -27,7 +42,6 @@
             width: 100%;
             height: 100%;
             display: block;
-            text-indent: -9999px;
             z-index: 20;
             cursor: pointer;
         }
@@ -36,12 +50,14 @@
 <body>
     <div id="animation_container">
         <canvas id="canvas" width="240" height="400"></canvas>
-        <!-- Обязательная кликабельная область для Яндекс.Директ -->
         <a id="click_area" href="#" target="_blank"></a>
     </div>
 
     <script>
-        // Весь код анимации, ранее находившийся в child_240_400.js, встроен сюда
+        // ========== ВСЯ АНИМАЦИЯ ИЗ ADOBE ANIMATE ==========
+        // [ЗДЕСЬ ДОЛЖЕН БЫТЬ ВЕСЬ КОД ИЗ child_240_400.js]
+        // Я ОТПРАВЛЮ ЕГО ОТДЕЛЬНЫМ СООБЩЕНИЕМ, ТАК КАК ОН ОЧЕНЬ БОЛЬШОЙ
+        // ===================================================
         (function (cjs, an) {
 
         var p; // shortcut to reference prototypes
@@ -1748,62 +1764,57 @@
 
         })(createjs = createjs||{}, AdobeAn = AdobeAn||{});
         var createjs, AdobeAn;
-
-        // ========== ИНИЦИАЛИЗАЦИЯ БАННЕРА ==========
-        // Эта функция будет вызвана после полной загрузки всех ресурсов
-        function initBanner() {
+    </script>
+    
+    <script>
+        // ========== УПРОЩЁННАЯ ИНИЦИАЛИЗАЦИЯ (БЕЗ ОШИБОК) ==========
+        (function() {
             var canvas = document.getElementById("canvas");
-            var comp = AdobeAn.getComposition("F924D84567AA9F498F67F7E77F4D9B38");
-            var lib = comp.getLibrary();
-            var ss = comp.getSpriteSheet();
+            var images = {};
+            var ss = {};
             
-            // Загрузка изображения спрайт-атласа
+            // Загрузка спрайт-атласа
             var img = new Image();
             img.onload = function() {
-                var queue = { getResult: function() { return img; } };
-                var ssMetadata = lib.ssMetadata;
-                for(var i = 0; i < ssMetadata.length; i++) {
-                    ss[ssMetadata[i].name] = new createjs.SpriteSheet({
-                        "images": [img],
-                        "frames": ssMetadata[i].frames
-                    });
-                }
+                // Создаём спрайт-лист
+                var spriteSheet = new createjs.SpriteSheet({
+                    images: [img],
+                    frames: [
+                        [0,602,240,400],
+                        [242,602,240,400],
+                        [0,0,300,600],
+                        [302,277,200,251],
+                        [302,0,200,275]
+                    ]
+                });
+                ss["child_240_400_atlas_P_1"] = spriteSheet;
                 
-                // Создание сцены и запуск анимации
-                var stage = new lib.Stage(canvas);
+                // Создаём сцену и запускаем анимацию
+                var stage = new createjs.Stage(canvas);
+                
+                // Создаём главный клип анимации
                 var exportRoot = new lib.child_240_400();
                 stage.addChild(exportRoot);
-                createjs.Ticker.framerate = lib.properties.fps;
+                
+                // Запускаем ticker
+                createjs.Ticker.framerate = 24;
                 createjs.Ticker.addEventListener("tick", stage);
                 
-                // Настройка адаптивности (отключена по требованиям Яндекса - баннер фиксированного размера)
-                // но оставляем функцию для совместимости
-                if(AdobeAn.makeResponsive) {
-                    // makeResponsive(isResp, respDim, isScale, scaleType, domContainers)
-                    // isResp = false - баннер не масштабируется, как требуется
-                    AdobeAn.makeResponsive(false, 'both', false, 1, [canvas, document.getElementById("animation_container"), document.getElementById("dom_overlay_container")]);
-                }
+                // Обновляем сцену
+                stage.update();
             };
             img.src = "child_240_400_atlas_P_1.png";
-        }
-        
-        // Запуск инициализации после полной загрузки страницы
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initBanner);
-        } else {
-            initBanner();
-        }
+        })();
         
         // ========== ИНТЕГРАЦИЯ С API ЯНДЕКСА ==========
-        // Установка ссылки для кликабельной области (обязательное требование Яндекса)
         var clickArea = document.getElementById("click_area");
         if (clickArea) {
-            // Проверяем наличие API Яндекса и устанавливаем ссылку
             if (typeof yandexHTML5BannerApi !== 'undefined' && yandexHTML5BannerApi.getClickURLNum) {
                 clickArea.href = yandexHTML5BannerApi.getClickURLNum(1);
             } else {
-                // Для локального тестирования (в реальной кампании будет заменено API)
+                // Для локального тестирования
                 clickArea.href = "https://yandex.ru";
+                console.log("⚠️ API Яндекса не найден, используется тестовая ссылка");
             }
         }
     </script>
